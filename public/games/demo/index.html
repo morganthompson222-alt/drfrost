@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Demo Clicker</title>
+    <style>
+      html,body{height:100%;margin:0}
+      body{background:#0b0b12;color:#f0f0ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+      main{max-width:720px;margin:0 auto;padding:24px}
+      h1{font-size:34px;margin:6px 0 10px}
+      p{color:#9b9bc2;line-height:1.4}
+      .row{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+      button{background:#6c63ff;border:0;color:#fff;border-radius:14px;padding:12px 14px;font-weight:700;cursor:pointer}
+      button:active{transform:translateY(1px)}
+      .card{margin-top:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+      .stat{font-size:28px;font-weight:900}
+      small{color:#8a8ab3}
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Demo Clicker</h1>
+      <p>This is a locally hosted demo game. If this loads, your player page + iframe setup works.</p>
+      <div class="card">
+        <div class="row">
+          <button id="btn">Click</button>
+          <div>
+            <div class="stat"><span id="score">0</span></div>
+            <small>Score</small>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      let s = 0;
+      const score = document.getElementById("score");
+      document.getElementById("btn").addEventListener("click", () => {
+        s += 1;
+        score.textContent = String(s);
+      });
+    </script>
+  </body>
+</html>
+
