@@ -70,17 +70,17 @@ export function HomeClient() {
 
   const favKey = "vg_favs_v1";
   const recentKey = "vg_recent_v1";
-  const [favIds, setFavIds] = useState<Set<string>>(new Set());
-  const [recentIds, setRecentIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    setFavIds(loadIds(favKey));
+  const [favIds, setFavIds] = useState<Set<string>>(() => loadIds(favKey));
+  const [recentIds, setRecentIds] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem(recentKey);
       const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-      if (Array.isArray(parsed)) setRecentIds(parsed.filter((x) => typeof x === "string") as string[]);
-    } catch {}
-  }, []);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((x) => typeof x === "string") as string[];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     let alive = true;

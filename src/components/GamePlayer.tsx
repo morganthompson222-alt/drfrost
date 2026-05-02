@@ -5,18 +5,17 @@ import type { Game } from "@/lib/types";
 
 export function GamePlayer({ game }: { game: Game }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [stuck, setStuck] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const src = useMemo(() => game.playUrl, [game.playUrl]);
 
+  const [status, setStatus] = useState<{ src: string; stuck: boolean }>({ src, stuck: false });
+  const isStuck = status.src === src ? status.stuck : false;
+
   useEffect(() => {
-    setStuck(false);
-    setLoaded(false);
     const t = window.setTimeout(() => {
-      if (!loaded) setStuck(true);
+      setStatus({ src, stuck: true });
     }, 8500);
     return () => window.clearTimeout(t);
-  }, [src, loaded]);
+  }, [src]);
 
   async function fullscreen() {
     const el = wrapRef.current;
@@ -45,7 +44,7 @@ export function GamePlayer({ game }: { game: Game }) {
       </div>
 
       <div className="playerWrap" ref={wrapRef}>
-        {stuck ? (
+        {isStuck ? (
           <div style={{ padding: 22 }}>
             <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>This game may block embeds.</div>
             <div style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 14 }}>
@@ -62,7 +61,7 @@ export function GamePlayer({ game }: { game: Game }) {
             allow="fullscreen; gamepad; autoplay"
             sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups"
             onLoad={() => {
-              setLoaded(true);
+              setStatus({ src, stuck: false });
             }}
           />
         )}
