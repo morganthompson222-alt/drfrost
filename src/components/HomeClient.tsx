@@ -207,7 +207,7 @@ export function HomeClient(props?: { mode?: "all" | "math" }) {
       <header className="header">
         <div className="container headerRow">
           <Link href="/" className="brand" aria-label="Home">
-            VOID<span>GAMES</span>
+            DR<span>FROST</span>
           </Link>
           <input
             className="search"

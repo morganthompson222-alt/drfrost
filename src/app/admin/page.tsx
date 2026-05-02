@@ -21,7 +21,7 @@ export default async function AdminPage() {
       <header className="header">
         <div className="container headerRow">
           <Link href="/" className="brand" aria-label="Home">
-            VOID<span>GAMES</span>
+            DR<span>FROST</span>
           </Link>
           <span className="pill">Admin</span>
           <div style={{ marginLeft: "auto" }} />

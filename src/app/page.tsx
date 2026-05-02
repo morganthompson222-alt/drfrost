@@ -9,8 +9,8 @@ export default function Home() {
             DR<span>FROST</span>
           </Link>
           <div style={{ marginLeft: "auto" }} />
-          <Link className="btn" href="/math-games">
-            Math Games
+          <Link className="btn" href="/games">
+            DrFrost Games
           </Link>
         </div>
       </header>
@@ -26,13 +26,13 @@ export default function Home() {
             Topics you can explore: arithmetic, fractions, algebra, geometry, probability, graphs, and mental maths strategies.
           </div>
           <div>
-            Want something interactive? Open the categories menu below and pick <span style={{ color: "var(--text)" }}>Math Games</span>.
+            Want something interactive? Open the categories menu below and pick <span style={{ color: "var(--text)" }}>DrFrost Games</span>.
           </div>
         </div>
 
         <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <Link className="btn" href="/math-games">
-            Start Math Games
+          <Link className="btn" href="/games">
+            Start DrFrost Games
           </Link>
 
           <details>
@@ -40,8 +40,8 @@ export default function Home() {
               Categories
             </summary>
             <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <Link className="btn" href="/math-games">
-                Math Games
+              <Link className="btn" href="/games">
+                DrFrost Games
               </Link>
               <button className="btn" type="button" disabled style={{ opacity: 0.55, cursor: "not-allowed" }}>
                 Science (Coming soon)
