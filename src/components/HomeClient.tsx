@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Game } from "@/lib/types";
+import { AdSlot } from "@/components/AdSlot";
 import { GameRow } from "@/components/GameRow";
 import { GameTile } from "@/components/GameTile";
 
@@ -60,7 +61,15 @@ function buildRows(all: Game[], recent: Game[], favs: Game[]) {
   return pruned;
 }
 
-export function HomeClient() {
+function isMathGame(g: Game) {
+  const c = g.categories.map((x) => x.toLowerCase());
+  if (c.includes("math") || c.includes("math-games") || c.includes("education") || c.includes("educational")) return true;
+  const text = `${g.title} ${g.description ?? ""} ${g.categories.join(" ")} ${g.playUrl}`.toLowerCase();
+  return text.includes("math") || text.includes("algebra") || text.includes("geometry") || text.includes("numbers");
+}
+
+export function HomeClient(props?: { mode?: "all" | "math" }) {
+  const mode = props?.mode ?? "all";
   const [all, setAll] = useState<Game[]>([]);
   const [source, setSource] = useState<string>("—");
   const [loading, setLoading] = useState(true);
@@ -106,12 +115,20 @@ export function HomeClient() {
     };
   }, [sort]);
 
-  const favs = useMemo(() => all.filter((g) => favIds.has(g.slug)), [all, favIds]);
-  const recent = useMemo(() => recentIds.map((id) => all.find((g) => g.slug === id)).filter(Boolean) as Game[], [all, recentIds]);
+  const visibleAll = useMemo(() => {
+    if (mode === "math") return all.filter(isMathGame);
+    return all;
+  }, [all, mode]);
+
+  const favs = useMemo(() => visibleAll.filter((g) => favIds.has(g.slug)), [visibleAll, favIds]);
+  const recent = useMemo(
+    () => recentIds.map((id) => visibleAll.find((g) => g.slug === id)).filter(Boolean) as Game[],
+    [visibleAll, recentIds],
+  );
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    let out = all;
+    let out = visibleAll;
     if (s) {
       out = out.filter((g) => (`${g.title} ${g.description ?? ""} ${g.categories.join(" ")} ${g.playUrl}`).toLowerCase().includes(s));
     }
@@ -119,9 +136,9 @@ export function HomeClient() {
     else if (quick === "new") out = out.filter((g) => g.isNew);
     else if (quick === "top") out = out.filter((g) => g.isTop);
     return out;
-  }, [all, q, quick]);
+  }, [q, quick, visibleAll]);
 
-  const rows = useMemo(() => buildRows(all, recent, favs), [all, favs, recent]);
+  const rows = useMemo(() => buildRows(visibleAll, recent, favs), [favs, recent, visibleAll]);
 
   const focusMap = useRef(new Map<string, HTMLAnchorElement>());
   const activeIndex = useRef<{ row: number; col: number } | null>(null);
@@ -199,8 +216,9 @@ export function HomeClient() {
             onChange={(e) => setQ(e.target.value)}
             aria-label="Search"
           />
+          {mode === "math" ? <span className="pill">Math Games</span> : null}
           <span className="pill">Source: {source}</span>
-          <span className="pill">{loading ? "Loading…" : `${filtered.length}/${all.length}`}</span>
+          <span className="pill">{loading ? "Loading…" : `${filtered.length}/${visibleAll.length}`}</span>
           <select className="pill" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label="Sort">
             <option value="featured">Featured</option>
             <option value="az">A → Z</option>
@@ -227,6 +245,8 @@ export function HomeClient() {
           ))}
         </div>
 
+        <AdSlot placement="home-banner" />
+
         {q.trim() ? (
           <>
             <div className="pageTitle">Results</div>
@@ -248,20 +268,23 @@ export function HomeClient() {
         ) : (
           rows.length ? (
             rows.map((r, rowIdx) => (
-              <GameRow key={r.key} title={r.title} count={r.games.length}>
-                {r.games.map((g, colIdx) => (
-                  <GameTile
-                    key={g.slug}
-                    game={g}
-                    row={rowIdx}
-                    col={colIdx}
-                    isFav={favIds.has(g.slug)}
-                    setEl={setEl}
-                    onFav={() => toggleFav(g.slug)}
-                    onPlay={() => markRecent(g.slug)}
-                  />
-                ))}
-              </GameRow>
+              <div key={r.key}>
+                <GameRow title={r.title} count={r.games.length}>
+                  {r.games.map((g, colIdx) => (
+                    <GameTile
+                      key={g.slug}
+                      game={g}
+                      row={rowIdx}
+                      col={colIdx}
+                      isFav={favIds.has(g.slug)}
+                      setEl={setEl}
+                      onFav={() => toggleFav(g.slug)}
+                      onPlay={() => markRecent(g.slug)}
+                    />
+                  ))}
+                </GameRow>
+                {rowIdx === 1 ? <AdSlot placement="home-inline" /> : null}
+              </div>
             ))
           ) : (
             <div style={{ padding: "42px 0", color: "var(--text-muted)" }}>

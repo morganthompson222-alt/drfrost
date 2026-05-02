@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getGameBySlug } from "@/lib/games";
+import { AdSlot } from "@/components/AdSlot";
 import { GamePlayer } from "@/components/GamePlayer";
 
 export default async function PlayPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -25,9 +26,9 @@ export default async function PlayPage({ params }: { params: Promise<{ slug: str
       </header>
 
       <main className="container content">
+        <AdSlot placement="play-banner" />
         <GamePlayer game={game} />
       </main>
     </>
   );
 }
-

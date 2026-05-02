@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Tracker } from "@/components/Tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Games",
-  description: "Modern browser-based games platform",
+  title: "DrFrost",
+  description: "Maths + interactive practice",
 };
 
 export default function RootLayout({
@@ -24,7 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Tracker />
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }
