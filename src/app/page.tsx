@@ -10,7 +10,7 @@ export default function Home() {
           </Link>
           <div style={{ marginLeft: "auto" }} />
           <Link className="btn" href="/games">
-            DrFrost Games
+            DrFrost contact form
           </Link>
         </div>
       </header>
@@ -26,13 +26,13 @@ export default function Home() {
             Topics you can explore: arithmetic, fractions, algebra, geometry, probability, graphs, and mental maths strategies.
           </div>
           <div>
-            Want something interactive? Open the categories menu below and pick <span style={{ color: "var(--text)" }}>DrFrost Games</span>.
+            Want something interactive? Open the categories menu below and pick <span style={{ color: "var(--text)" }}>contact us</span>.
           </div>
         </div>
 
         <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
           <Link className="btn" href="/games">
-            Start DrFrost Games
+            Start contact form
           </Link>
 
           <details>
@@ -41,7 +41,7 @@ export default function Home() {
             </summary>
             <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link className="btn" href="/games">
-                DrFrost Games
+                contact form
               </Link>
               <button className="btn" type="button" disabled style={{ opacity: 0.55, cursor: "not-allowed" }}>
                 Science (Coming soon)
