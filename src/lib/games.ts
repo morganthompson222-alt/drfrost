@@ -1,107 +1,5 @@
 import { localGames } from "@/data/localGames";
-import { slugify } from "@/lib/slug";
 import type { Game } from "@/lib/types";
-
-const REMOTE_FEED_URL = "https://www.onlinegames.io/media/plugins/genGames/embed.json";
-
-type RawFeedItem = {
-  title?: unknown;
-  description?: unknown;
-  embed?: unknown;
-  image?: unknown;
-  tags?: unknown;
-};
-
-function safeStr(v: unknown) {
-  return typeof v === "string" ? v : "";
-}
-
-function parseTags(raw: unknown) {
-  const s = safeStr(raw);
-  if (!s) return [];
-  return s
-    .split(",")
-    .map((t) => t.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-const HOT_KEYWORDS = [
-  "krunker",
-  "fps",
-  "sniper",
-  "battle",
-  "multiplayer",
-  "madalin",
-  "drift",
-  "gta",
-];
-
-const NEW_KEYWORDS = ["new", "2024", "2025", "2026", "release", "fresh"];
-
-function normalizeRemote(items: RawFeedItem[]) {
-  const games: Game[] = [];
-  const used = new Set<string>();
-
-  for (let i = 0; i < items.length; i++) {
-    const raw = items[i] ?? {};
-    const title = safeStr(raw.title);
-    const playUrl = safeStr(raw.embed);
-    if (!title || !playUrl) continue;
-
-    const base = slugify(title) || `game-${i}`;
-    let slug = base;
-    let n = 2;
-    while (used.has(slug)) {
-      slug = `${base}-${n++}`;
-    }
-    used.add(slug);
-
-    const tags = parseTags(raw.tags);
-    const hay = `${title} ${safeStr(raw.description)} ${tags.join(" ")} ${playUrl}`.toLowerCase();
-    const isHot = HOT_KEYWORDS.some((k) => hay.includes(k));
-    const isNew = NEW_KEYWORDS.some((k) => hay.includes(k));
-    const isTop = i < 30 && !isHot && !isNew;
-
-    games.push({
-      id: slug,
-      slug,
-      title,
-      description: safeStr(raw.description) || undefined,
-      thumbnailUrl: safeStr(raw.image) || undefined,
-      categories: tags,
-      source: "embed",
-      playUrl,
-      isHot,
-      isNew,
-      isTop,
-    });
-  }
-
-  return games;
-}
-
-let liveCache: { ts: number; games: Game[] } | null = null;
-
-async function fetchLive() {
-  const now = Date.now();
-  if (liveCache && now - liveCache.ts < 1000 * 60 * 10) return liveCache.games;
-
-  const res = await fetch(REMOTE_FEED_URL, {
-    next: { revalidate: 60 * 30 },
-  });
-  if (!res.ok) throw new Error("live_feed_unavailable");
-  const json = (await res.json()) as RawFeedItem[];
-  const games = normalizeRemote(Array.isArray(json) ? json : []);
-  liveCache = { ts: now, games };
-  return games;
-}
-
-function mergeLocal(live: Game[]) {
-  const map = new Map<string, Game>();
-  for (const g of localGames) map.set(g.slug, g);
-  for (const g of live) if (!map.has(g.slug)) map.set(g.slug, g);
-  return Array.from(map.values());
-}
 
 export async function getAllGames() {
   const res = await getAllGamesResult();
@@ -109,12 +7,7 @@ export async function getAllGames() {
 }
 
 export async function getAllGamesResult() {
-  try {
-    const live = await fetchLive();
-    return { source: "live" as const, games: mergeLocal(live) };
-  } catch {
-    return { source: "local" as const, games: mergeLocal([]) };
-  }
+  return { source: "local" as const, games: localGames };
 }
 
 export async function getGameBySlug(slug: string) {
